@@ -1,0 +1,14 @@
+---
+applications:
+- name: image_utils
+  host: image_utils
+  path: .
+  memory: 1792M
+  disk_quota: 2G
+  command: python app.py
+  health-check-type: http
+  health-check-http-endpoint: /health
+  env:
+    IMAGE_UTILS_ENV: prod
+services:
+  - rabbitmq-service

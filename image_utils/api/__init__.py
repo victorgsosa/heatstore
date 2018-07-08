@@ -1,0 +1,1 @@
+from services.image_detector.person_detector import PersonDetector
