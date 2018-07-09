@@ -14,6 +14,8 @@ class Config(object):
 	RESTFUL_JSON = {'cls': Encoder}
 	DETECTION_WORKERS = 1
 	LOCATION_WORKERS = 1 
+	RABBITMQ_HEARTBEAT_INTERVAL = 600
+	RABBITMQ_BLOCKED_CONNECTION_TIMEOUT = 300
 
 class DevelopmentConfig(Config):
 	PORT = 5000

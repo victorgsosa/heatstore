@@ -31,6 +31,8 @@ class AMQPConsumerManager(object):
 		connection = pika.BlockingConnection(pika.URLParameters(self.amqp_url))
 		log.info('Subscribing to exchange on %s with callback %s', exchange, connection, callback)
 		channel = connection.channel()
+		channel.exchange_declare(exchange=exchange,
+                         exchange_type='fanout')
 		result = channel.queue_declare(exclusive=True)
 		channel.queue_bind(exchange=exchange,
                    queue=result.method.queue)
