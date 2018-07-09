@@ -38,7 +38,9 @@ class ImageLocatorService(Resource):
 		locations = [ self.locate(image['detections'], im.image_size(im.read_base64(image['content']))[0]) if image['detections'] else [] for image in images]
 		log.debug("added locations %s", locations)
 		for i in range(len(images)):
-			images[i]['locations'] = locations[i]
+			for j in range(len(images[i]['detections'])):
+				images[i]['detections'][j]['x'] = locations[i][j]['x']
+				images[i]['detections'][j]['y'] = locations[i][j]['y']
 		return images
 
 	def locate(self, detections, width):

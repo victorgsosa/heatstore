@@ -30,7 +30,9 @@ api = Api(app)
 config_name = os.getenv('IMAGE_UTILS_ENV', 'dev')
 app.config.from_object(config[config_name])
 logging.basicConfig(level=app.config['LOG_LEVEL'], stream=sys.stdout)
-pika_connection = pika.BlockingConnection(pika.URLParameters(app.config['RABBITMQ_HOST']))
+pika_url = "%s/?heartbeat_interval=%s&blocked_connection_timeout=%s" % (app.config['RABBITMQ_HOST'], app.config['RABBITMQ_HEARTBEAT_INTERVAL'], app.config['RABBITMQ_BLOCKED_CONNECTION_TIMEOUT'])
+app.logger.info("Connecting to amqp server at %s", pika_url)
+pika_connection = pika.BlockingConnection(pika.URLParameters(pika_url))
 image_locator= ImageLocator(ImageLocatorCalibrator(
 				camera = Camera(app.config['CAMERA_FOCAL_LENGTH'], app.config['CAMERA_HEIGHT']),
 				measures = {
@@ -40,7 +42,7 @@ image_locator= ImageLocator(ImageLocatorCalibrator(
 			))
 person_detector = PersonDetector(PersonDetectorModel(path=app.config['MODEL_PATH']))
 
-amqp_consumer = AMQPConsumerManager(app.config['RABBITMQ_HOST'])
+amqp_consumer = AMQPConsumerManager(pika_url)
 
 
 def configure(binder: Binder) -> Binder:
@@ -64,7 +66,7 @@ def configure(binder: Binder) -> Binder:
 
 def print_locations_callback(ch, method, properties, body):
 	images = json.loads(body)
-	app.logger.debug("Locations found %s", [image['locations'] for image in images])
+	app.logger.debug("Detections found %s", [image['detections'] for image in images])
 
 if __name__ == '__main__':
 	api.add_resource(ImageDetectorService, '/detector')
