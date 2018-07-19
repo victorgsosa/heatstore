@@ -45,6 +45,7 @@ class ImageDetectorService(Resource):
 		for i in range(len(images)):
 			width, height = im.image_size(im.read_base64(images[i]['content']))
 			images[i]['detections'] = [{
+				'score': detection['score'],
 				'xMin': detection['xMin'] * width,
 				'yMin': detection['yMin'] * height,
 				'xMax': detection['xMax'] * width,
@@ -53,7 +54,8 @@ class ImageDetectorService(Resource):
 		return images
 
 	def detect_persons(self, images):
-		detections = self.detector.detect([im.read_base64(image['content']) for image in images], 0.9)
+		#TODO: Threshold 
+		detections = self.detector.detect([im.read_base64(image['content']) for image in images], 0.8)
 		return detections
 
 	def send_to_rabbit(self, detections):
