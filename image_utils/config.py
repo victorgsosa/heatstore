@@ -9,7 +9,7 @@ class Config(object):
 	CAMERA_HEIGHT = 2
 	CAMERA_FOCAL_LENGTH = 1333.333333
 	CAMERA_DISTANCES = np.array([3.33, 3.33, 3.33])
-	CAMERA_MEASURES = np.array([[-205.192232,572.27504], [-18.075456,579.67873], [186.132704,574.00758]])
+	CAMERA_MEASURES = np.array([[-71.73979282,299.4118094], [277.7164698,310.8430266], [-259.8790325,319.5241928]])
 	IMAGE_QUEUE = 'image_queue'
 	RESTFUL_JSON = {'cls': Encoder}
 	DETECTION_WORKERS = 1
@@ -25,6 +25,6 @@ class DevelopmentConfig(Config):
 
 class ProductionConfig(Config):
 	PORT = 8080
-	RABBITMQ_HOST = 'amqp://rBakm7-46ZLZf6cK:jnHVnendNaspSWXf@10.11.241.11:35617'
+	RABBITMQ_HOST = 'amqp://ibBXrgPcCawRE5G1:JQf6cfgbqKJSLgaU@10.11.241.9:32771'
 	DEBUG = False
 	LOG_LEVEL = logging.DEBUG

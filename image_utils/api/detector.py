@@ -55,7 +55,7 @@ class ImageDetectorService(Resource):
 
 	def detect_persons(self, images):
 		#TODO: Threshold 
-		detections = self.detector.detect([im.read_base64(image['content']) for image in images], 0.8)
+		detections = self.detector.detect([im.read_base64(image['content']) for image in images], 0.90)
 		return detections
 
 	def send_to_rabbit(self, detections):
