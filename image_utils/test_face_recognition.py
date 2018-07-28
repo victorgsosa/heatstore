@@ -40,7 +40,7 @@ if __name__ == '__main__':
 			pil_image = Image.fromarray(aligned_image)
 			output_io = io.BytesIO()
 			pil_image.save(output_io, format='JPEG')
-			face_embeddings = embeddings.detect([output_io.getvalue()])
+			face_embeddings = embeddings.detect([output_io.getvalue()])[0]
 			if first_image is None:
 				first_image = face_embeddings
 			distance = np.linalg.norm(first_image-face_embeddings)

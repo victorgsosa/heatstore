@@ -41,7 +41,6 @@ class FacenetModel(object):
 			tf.import_graph_def(
 				graph_def, name='', input_map={'input': self.image_tensor, 
 				'phase_train': tf.convert_to_tensor(False)})
-		print(tf.get_default_graph().get_operations())
 		embedding_layer = tf.squeeze(
 			self.graph.get_tensor_by_name("embeddings:0")
 			)
@@ -66,7 +65,7 @@ class Facenet(object):
 
 			tf.logging.info('Finished processing records')
 
-		return embedding
+		return embeddings
 			
 
 	def infer(self, image):
