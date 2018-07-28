@@ -10,37 +10,40 @@ class FacenetModel(object):
 
 	def __init__(self, path):
 		self.path = path
-		self.graph = tf.Graph()
+		self.graph
 		self.image_input 
 		self.image_tensor
 		self.detector 
 
 
 	@lazy_property
-	def image_input(self):
-		with self.graph.as_default():
-			image = tf.placeholder(dtype=tf.string, name="image")
-		return image
-
-	@lazy_property
-	def image_tensor(self):
-		with self.graph.as_default():
-			decoded_image_tensor = tf.image.decode_image(self.image_input, channels=3)
-			float_image_tensor = tf.image.convert_image_dtype(decoded_image_tensor, tf.float32)
-			float_image_tensor.set_shape([default_image_size, default_image_size, 3])
-			image_tensor = tf.expand_dims(float_image_tensor, 0)
-		return image_tensor
-
-	@lazy_property
-	def detector(self):
+	def graph(self):
+		graph = tf.Graph()
 		with tf.gfile.Open(self.path, 'rb') as graph_def_file:
 			graph_content = graph_def_file.read()
 		graph_def = tf.GraphDef()
 		graph_def.MergeFromString(graph_content)
-		with self.graph.as_default():
+		with graph.as_default():
 			tf.import_graph_def(
 				graph_def, name='', input_map={'input': self.image_tensor, 
 				'phase_train': tf.convert_to_tensor(False)})
+		return graph
+
+	@lazy_property
+	def image_input(self):
+		image = tf.placeholder(dtype=tf.string, name="image")
+		return image
+
+	@lazy_property
+	def image_tensor(self):
+		decoded_image_tensor = tf.image.decode_image(self.image_input, channels=3)
+		float_image_tensor = tf.image.convert_image_dtype(decoded_image_tensor, tf.float32)
+		float_image_tensor.set_shape([default_image_size, default_image_size, 3])
+		image_tensor = tf.expand_dims(float_image_tensor, 0)
+		return image_tensor
+
+	@lazy_property
+	def detector(self):
 		embedding_layer = tf.squeeze(
 			self.graph.get_tensor_by_name("embeddings:0")
 			)
