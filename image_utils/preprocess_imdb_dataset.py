@@ -55,24 +55,27 @@ def process_dataset(name, data_dir, image_files, output_dir, meta, crop_size=def
 	print("Processing %s dataset with %i images" % (name, len(image_files)))
 	ignored_images = []
 	image_embeddings = []
-	with open(filename,'ab') as f:
-		for image_file in image_files:
-			i = i + 1
-			image = cv2.imread(os.path.join(data_dir, image_file))
-			rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-			embeddings  = process_image(rgb_image, crop_size)
-			if embeddings is None:
-				print("Image %s does not contains a face, ignored" % image_file)
-				ignored_images.append(i)
-			else:
-				image_embeddings.append(embeddings)
-			if i % batch_size == 0:
-				print("%i images processed" % i)
-				np.savetxt(f, np.array(image_embeddings), delimiter=",")
-				f.flush()
-				os.fsync(f.fileno())
-				image_embeddings = []
-	print("%s dataset processed" % name)
+	try:
+		with open(filename,'ab') as f:
+			for image_file in image_files:
+				i = i + 1
+				image = cv2.imread(os.path.join(data_dir, image_file))
+				rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+				embeddings  = process_image(rgb_image, crop_size)
+				if embeddings is None:
+					print("Image %s does not contains a face, ignored" % image_file)
+					ignored_images.append(i)
+				else:
+					image_embeddings.append(embeddings)
+				if i % batch_size == 0:
+					print("%i images processed" % i)
+					np.savetxt(f, np.array(image_embeddings), delimiter=",")
+					f.flush()
+					os.fsync(f.fileno())
+					image_embeddings = []
+		print("%s dataset processed" % name)
+	except KeyboardInterrupt:
+		print("Process cancelled printing temporal results...")
 	return ignored_images
 
 
