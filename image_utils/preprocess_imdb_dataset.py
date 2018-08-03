@@ -44,7 +44,7 @@ def process_image(image, crop_size):
 		return _image_embeddings(aligned_image)
 
 
-def process_dataset(name, data_dir, image_files, output_dir, meta, crop_size):
+def process_dataset(name, data_dir, image_files, output_dir, meta, crop_size=default_image_size, batch_size=1000):
 	assert name in ['train', 'test', 'val']
 	i = 0
 	filename = os.path.join(output_dir, 'embeddings.tar.gz')
@@ -54,7 +54,8 @@ def process_dataset(name, data_dir, image_files, output_dir, meta, crop_size):
 		pass
 	print("Processing %s dataset with %i images" % (name, len(image_files)))
 	ignored_images = []
-	with open(filename,'w') as f:
+	image_embeddings = []
+	with open(filename,'ab') as f:
 		for image_file in image_files:
 			i = i + 1
 			image = cv2.imread(os.path.join(data_dir, image_file))
@@ -64,17 +65,21 @@ def process_dataset(name, data_dir, image_files, output_dir, meta, crop_size):
 				print("Image %s does not contains a face, ignored" % image_file)
 				ignored_images.append(i)
 			else:
-				np.savetxt(f, np.expand_dims(embeddings,0), delimiter=",")
-			if i % 100 == 0:
+				image_embeddings.append(embeddings)
+			if i % batch_size == 0:
 				print("%i images processed" % i)
+				np.savetxt(f, np.array(image_embeddings), delimiter=",")
+				f.flush()
+				os.fsync(f.fileno())
+				image_embeddings = []
 	print("%s dataset processed" % name)
 	return ignored_images
 
 
 
-def main(meta_filename, data_dir, output_dir, crop_size):
+def main(meta_filename, data_dir, output_dir, crop_size=default_image_size, batch_size=1000):
 	meta = scipy.io.loadmat(meta_filename, squeeze_me=True)['imdb']
-	ignored_images = process_dataset('train', data_dir, meta['full_path'].tolist(), output_dir, meta, crop_size)
+	ignored_images = process_dataset('train', data_dir, meta['full_path'].tolist(), output_dir, meta, crop_size, batch_size)
 	print("ignored images: %s" % ignored_images)
 	ignored_filename = os.path.join(output_dir, 'ignored_images.txt')
 	try:
@@ -90,5 +95,6 @@ if __name__ == '__main__':
 	parser.add_argument('--meta', dest='meta', help='Metadata file')
 	parser.add_argument('--output-dir', dest='output_dir', help='Output data dir')
 	parser.add_argument('--crop-size', dest='crop_size', help='Crop size', default=default_image_size)
+	parser.add_argument('--batch-size', dest='batch_size', help='Batch size', default=1000)
 	args = parser.parse_args()
 	main(args.meta, args.data_dir, args.output_dir, args.crop_size)
