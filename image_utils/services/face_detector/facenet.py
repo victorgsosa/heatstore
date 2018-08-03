@@ -56,22 +56,31 @@ class Facenet(object):
 
 	@timing
 	def detect(self, images, threshold = 0.5):
-		embeddings = []
+
 
 		with tf.Session(graph=self.model.graph) as sess:
+			images_dataset = tf.data.Dataset.from_tensor_slices(images)
+			iterator = tf.data.Iterator.from_structure(images_dataset.output_types,
+			images_dataset.output_shapes)
+			image_batch = iterator.get_next()
+			embeddings = []
+			it_init = iterator.make_initializer(images_dataset)
 			init_op = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
 			sess.run(init_op)
-			for image in images:
-				embedding = self.infer(
-				  image)
-				embeddings.append(embedding)
-
-			tf.logging.info('Finished processing records')
-
+			sess.run(it_init)
+			while True:
+				try:
+					image = sess.run(image_batch)
+					embedding = self.infer(
+					  image)
+					embeddings.append(embedding)
+				except tf.errors.OutOfRangeError:
+					tf.logging.info('Finished processing records')
+					break
 		return embeddings
 			
 
-	def infer(self, image):
+	def infer(self, images):
 		embedding = tf.get_default_session().run( self.model.detector,
-		 feed_dict = {self.model.image_input: image})
+		 feed_dict = {self.model.image_input: images})
 		return embedding

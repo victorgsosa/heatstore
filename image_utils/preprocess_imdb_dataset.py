@@ -24,9 +24,7 @@ def _align_image(image, crop_size):
 	return aligned
 
 def _image_embeddings(image):
-	pil_image = Image.fromarray(image)
-	output_io = io.BytesIO()
-	pil_image.save(output_io, format='JPEG')
+	
 	face_embeddings = embeddings.detect([output_io.getvalue()])
 	return face_embeddings[0]
 
@@ -54,20 +52,24 @@ def process_dataset(name, data_dir, image_files, output_dir, meta, crop_size=def
 		pass
 	print("Processing %s dataset with %i images" % (name, len(image_files)))
 	ignored_images = []
-	image_embeddings = []
+	image_batch = []
 	try:
 		with open(filename,'ab') as f:
 			for image_file in image_files:
 				i = i + 1
 				image = cv2.imread(os.path.join(data_dir, image_file))
 				rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-				embeddings  = process_image(rgb_image, crop_size)
-				if embeddings is None:
+				aligned_image = _align_image(rgb_image, crop_size)
+				if aligned_image is None:
 					print("Image %s does not contains a face, ignored" % image_file)
 					ignored_images.append(i)
 				else:
-					image_embeddings.append(embeddings)
+					pil_image = Image.fromarray(aligned_image)
+					output_io = io.BytesIO()
+					pil_image.save(output_io, format='JPEG')
+					image_batch.append(output_io.getvalue())
 				if i % batch_size == 0:
+					image_embeddings = embeddings.detect(image_batch)
 					print("%i images processed" % i)
 					np.savetxt(f, np.array(image_embeddings), delimiter=",")
 					f.flush()
@@ -81,7 +83,10 @@ def process_dataset(name, data_dir, image_files, output_dir, meta, crop_size=def
 
 
 def main(meta_filename, data_dir, output_dir, crop_size=default_image_size, batch_size=1000):
+	print("Reading metadata...")
 	meta = scipy.io.loadmat(meta_filename, squeeze_me=True)['imdb']
+	print("Metadata readed")
+	print("Start processing images")
 	ignored_images = process_dataset('train', data_dir, meta['full_path'].tolist(), output_dir, meta, crop_size, batch_size)
 	print("ignored images: %s" % ignored_images)
 	ignored_filename = os.path.join(output_dir, 'ignored_images.txt')
@@ -97,7 +102,7 @@ if __name__ == '__main__':
 	parser.add_argument('--data-dir', dest='data_dir', help='Trainig data dir')
 	parser.add_argument('--meta', dest='meta', help='Metadata file')
 	parser.add_argument('--output-dir', dest='output_dir', help='Output data dir')
-	parser.add_argument('--crop-size', dest='crop_size', help='Crop size', default=default_image_size)
-	parser.add_argument('--batch-size', dest='batch_size', help='Batch size', default=1000)
+	parser.add_argument('--crop-size', dest='crop_size', help='Crop size', type=int, default=default_image_size)
+	parser.add_argument('--batch-size', dest='batch_size', help='Batch size', type=int, default=1000)
 	args = parser.parse_args()
-	main(args.meta, args.data_dir, args.output_dir, args.crop_size)
+	main(args.meta, args.data_dir, args.output_dir, args.crop_size, args.batch_size)
