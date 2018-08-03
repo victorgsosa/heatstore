@@ -53,6 +53,7 @@ def process_dataset(name, data_dir, image_files, output_dir, meta, crop_size=def
 	print("Processing %s dataset with %i images" % (name, len(image_files)))
 	ignored_images = []
 	image_batch = []
+	ignored_images_batch = []
 	try:
 		with open(filename,'ab') as f:
 			for image_file in image_files:
@@ -62,7 +63,7 @@ def process_dataset(name, data_dir, image_files, output_dir, meta, crop_size=def
 				aligned_image = _align_image(rgb_image, crop_size)
 				if aligned_image is None:
 					print("Image %s does not contains a face, ignored" % image_file)
-					ignored_images.append(i)
+					ignored_images_batch.append(i)
 				else:
 					pil_image = Image.fromarray(aligned_image)
 					output_io = io.BytesIO()
@@ -74,6 +75,8 @@ def process_dataset(name, data_dir, image_files, output_dir, meta, crop_size=def
 					np.savetxt(f, np.array(image_embeddings), delimiter=",")
 					f.flush()
 					os.fsync(f.fileno())
+					ignored_images.extend(ignored_images_batch)
+					ignored_images_batch = []
 					image_batch = []
 		print("%s dataset processed" % name)
 	except KeyboardInterrupt:
