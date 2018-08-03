@@ -74,7 +74,7 @@ def process_dataset(name, data_dir, image_files, output_dir, meta, crop_size=def
 					np.savetxt(f, np.array(image_embeddings), delimiter=",")
 					f.flush()
 					os.fsync(f.fileno())
-					image_embeddings = []
+					image_batch = []
 		print("%s dataset processed" % name)
 	except KeyboardInterrupt:
 		print("Process cancelled printing temporal results...")
