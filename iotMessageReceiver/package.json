@@ -1,0 +1,11 @@
+{
+  "name":"iotMessageReceiver",
+  "author": "Juan Marriaga",
+  "version":"0.0.1",
+  "dependencies":{
+    "amqplib":">= 0.1.0",
+    "sanitizer": "*",
+   "xmlhttprequest":"*"
+ }
+
+}

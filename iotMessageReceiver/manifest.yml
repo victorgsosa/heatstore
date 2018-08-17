@@ -1,0 +1,11 @@
+---
+applications:
+- name: iotMessageReceiver
+  command: node app.js
+  memory: 128M
+  instances: 1
+  host: iotMessageReceiver
+  path: .
+services:
+   - rabbitmq-service
+  
