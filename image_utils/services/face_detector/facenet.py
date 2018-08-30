@@ -10,10 +10,10 @@ class FacenetModel(object):
 
 	def __init__(self, path):
 		self.path = path
+		self.detector 
 		self.graph
 		self.image_input 
 		self.image_tensor
-		self.detector 
 
 
 	@lazy_property
@@ -22,7 +22,7 @@ class FacenetModel(object):
 		with tf.gfile.Open(self.path, 'rb') as graph_def_file:
 			graph_content = graph_def_file.read()
 		graph_def = tf.GraphDef()
-		graph_def.MergeFromString(graph_content)
+		graph_def.ParseFromString(graph_content)
 		with graph.as_default():
 			tf.import_graph_def(
 				graph_def, name='', input_map={'input': self.image_tensor, 
@@ -53,12 +53,12 @@ class FacenetModel(object):
 class Facenet(object):
 	def __init__(self, model: FacenetModel):
 		self.model = model
+		self.sess = tf.Session()
 
 	@timing
-	def detect(self, images, threshold = 0.5):
-
-
-		with tf.Session(graph=self.model.graph) as sess:
+	def detect(self, images):
+		graph = self.model.graph
+		with tf.Session(graph=graph) as sess:
 			images_dataset = tf.data.Dataset.from_tensor_slices(images)
 			iterator = tf.data.Iterator.from_structure(images_dataset.output_types,
 			images_dataset.output_shapes)
@@ -71,8 +71,8 @@ class Facenet(object):
 			while True:
 				try:
 					image = sess.run(image_batch)
-					embedding = self.infer(
-					  image)
+					embedding = sess.run( self.model.detector,
+		 				feed_dict = {self.model.image_input: image})
 					embeddings.append(embedding)
 				except tf.errors.OutOfRangeError:
 					tf.logging.info('Finished processing records')
@@ -80,7 +80,3 @@ class Facenet(object):
 		return embeddings
 			
 
-	def infer(self, images):
-		embedding = tf.get_default_session().run( self.model.detector,
-		 feed_dict = {self.model.image_input: images})
-		return embedding

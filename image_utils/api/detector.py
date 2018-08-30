@@ -8,34 +8,40 @@ import logging
 import util.images as im
 
 from flask import request, current_app as app
-from flask_injector import inject
 from flask_restful import Resource
 from PIL import Image
 from services.image_detector.person_detector import PersonDetector
 from concurrent.futures import ThreadPoolExecutor
+from services.camera import CameraService
 from util.encoder import Encoder
+from api import BaseCameraController
 
 
 log = logging.getLogger(__name__)
 
-class ImageDetectorService(Resource):
-	DETECTION_QUEUE = 'detection_queue'
+class ImageDetectorController(Resource, BaseCameraController):
+	LOCATION_QUEUE = 'locations'
+	CROP_QUEUE = 'crops'
+	LOCATION_ACTION = 'LOCATION'
+	CROP_ACTION = 'CROP'
 	
-	@inject
-	def __init__(self, detector: PersonDetector, connection: pika.BlockingConnection = None):
+	def __init__(self, detector: PersonDetector, camera_service: CameraService, connection: pika.BlockingConnection = None):
+		BaseCameraController.__init__(self, camera_service)
 		self.detector = detector
 		self.connection = connection
 
 	def consume(self, channel, method, properties, body):
 		images = json.loads(body)
+		cameras = super(ImageDetectorController, self).find_cameras(images)
 		images = self.add_detections(images)
-		self.send_to_rabbit(images)
+		self.send_to_rabbit(images, cameras)
 
 
 	def post(self):
 		images = request.get_json(force=True)
+		cameras = super(ImageDetectorController, self).find_cameras(images)
 		images = self.add_detections(images)
-		self.send_to_rabbit(images)
+		self.send_to_rabbit(images, cameras)
 		return images
 
 	def add_detections(self, images):
@@ -58,16 +64,11 @@ class ImageDetectorService(Resource):
 		detections = self.detector.detect([im.read_base64(image['content']) for image in images], 0.90)
 		return detections
 
-	def send_to_rabbit(self, detections):
+	def send_to_rabbit(self, images, cameras):
 		if self.connection:
 			channel = self.connection.channel()
-			channel.queue_declare(queue=self.DETECTION_QUEUE, durable=True)
-			channel.basic_publish(exchange='',
-					routing_key='detection_queue',
-                    body=json.dumps(detections, cls=Encoder),
-                    properties=pika.BasicProperties(
-                    delivery_mode = 2, # make message persistent
-                          ))
-
+			super(ImageDetectorController, self).send_to_rabbit_for_action(channel, images, cameras, self.LOCATION_QUEUE, self.LOCATION_ACTION)
+			super(ImageDetectorController, self).send_to_rabbit_for_action(channel, images, cameras, self.CROP_QUEUE, self.CROP_ACTION)
+			
 
 

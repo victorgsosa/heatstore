@@ -14,7 +14,5 @@ class Encoder(json.JSONEncoder):
             return obj.tolist()
         elif isinstance(obj, uuid.UUID):
         	return str(obj)
-        elif isinstance(obj, np.ndarray):
-            return obj.tolist()
         else:
             return super(Encoder, self).default(obj)

@@ -10,5 +10,7 @@ applications:
   health-check-http-endpoint: /health
   env:
     IMAGE_UTILS_ENV: prod
+  buildpacks:
+    - https://github.com/cloudfoundry/multi-buildpack.git
 services:
   - rabbitmq-service

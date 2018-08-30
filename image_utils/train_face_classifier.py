@@ -7,8 +7,13 @@ from services.face_detector.classifiers.svm_face_classifier import SVMFaceClassi
 
 def train(embeddings, classes, output_file):
 	classifier = SVMFaceClassifier()
+	np.random.seed(0)
 	classifier.train(embeddings, classes)
 	classifier.save(output_file)
+
+def sample(embeddings, classes, size):
+	indexes = np.random.randint(0, embeddings.shape[0], size)
+	return embeddings[indexes], classes[indexes]
 
 def main(embeddings_file, meta_filename, y_meta, output_file, ignored_examples_file=None):
 	print('Reading embeddings...')
@@ -34,6 +39,7 @@ def main(embeddings_file, meta_filename, y_meta, output_file, ignored_examples_f
 
 	embeddings = embeddings[~np.isnan(y)]
 	y = y[~np.isnan(y)]
+	embeddings, y = sample(embeddings, y, 20000)
 	print('Training with %d images' % embeddings.shape[0])
 	train(embeddings, y, output_file)
 

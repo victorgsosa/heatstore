@@ -12,7 +12,6 @@ class AbstractFaceClassifier(object):
 
 	
 	def train(self, X, y):
-		
 		self._model = self._train(X,y)
 
 	@abstractmethod
@@ -22,7 +21,10 @@ class AbstractFaceClassifier(object):
 	def save(self, filename): raise NotImplementedError()
 
 	@abstractmethod
-	def predict(self, x): raise NotImplementedError()
+	def predict(self, X): raise NotImplementedError()
+
+	@abstractmethod
+	def predict_proba(self, X): raise NotImplementedError()
 
 
 

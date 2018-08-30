@@ -5,6 +5,7 @@ import argparse
 
 from PIL import Image
 from services.image_detector.person_detector import PersonDetector, PersonDetectorModel
+from services.image_cropper import ImageCropper
 
 
 if __name__ == '__main__':
@@ -14,7 +15,7 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 	cap = cv2.VideoCapture(args.source)
 	detector = PersonDetector(PersonDetectorModel(path='resources/image_detector/frozen_inference_graph.pb'))
-
+	cropper = ImageCropper()
 	while(True):
 		ret, image = cap.read()
 		rows = image.shape[0]
@@ -24,16 +25,20 @@ if __name__ == '__main__':
 		pil_image = Image.fromarray(rgb_image)
 		output_io = io.BytesIO()
 		pil_image.save(output_io, format='JPEG')
-		detections = detector.detect([output_io.getvalue()])
-		filetered_detetions = [ detection for detection in detections[0] if detection['score'] > args.threshold ]
-		print(filetered_detetions)
-		for detection in filetered_detetions:
+		image_bytes = output_io.getvalue()
+		detections = detector.detect([image_bytes])
+		filtered_detections = [ detection for detection in detections[0] if detection['score'] > args.threshold ]
+		print(filtered_detections)
+		for detection in filtered_detections:
 	   		left = int(detection['xMin'] * cols)
 	   		top = int(detection['yMin'] * rows)
 	   		right = int(detection['xMax'] * cols)
 	   		bottom = int(detection['yMax'] * rows)
 	   		cv2.rectangle(image, (left, top), (right, bottom), color=(23, 230, 210), thickness=2 )
-		cv2.imshow('detector', image)
+
+		crops = cropper.crop(image_bytes, filtered_detections)
+		resized_crops = [cv2.resize(crop, (100,100)) for crop in crops]
+		cv2.imshow('crops', np.hstack(resized_crops))
 		if cv2.waitKey(1) & 0xFF == ord('q'):
 			break
 

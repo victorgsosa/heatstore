@@ -67,7 +67,7 @@ class PersonDetector(object):
 
 	@decorators.timing
 	def detect(self, images, threshold = 0.5):
-		embeddings = []
+		imageDetections = []
 		with tf.Session(graph=self.model.graph) as sess:
 			sess.run(tf.local_variables_initializer())
 			for image in images:

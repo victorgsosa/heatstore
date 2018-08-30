@@ -1,0 +1,1 @@
+from .image_locator import ImageLocator
