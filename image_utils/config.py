@@ -4,7 +4,6 @@ import logging
 from util.encoder import Encoder
 
 class Config(object):
-	PERSON_MODEL_PATH = 'resources/image_detector/frozen_inference_graph.pb'
 	DEBUG = True
 	IMAGE_QUEUE = 'images'
 	RESTFUL_JSON = {'cls': Encoder}
@@ -14,6 +13,7 @@ class Config(object):
 	RABBITMQ_HEARTBEAT_INTERVAL = 0
 	RABBITMQ_BLOCKED_CONNECTION_TIMEOUT = 300
 	CAMERA_SERVICE_URL = "https://heatstoreapis0018881710trial.hanatrial.ondemand.com/heatstore-api/cameras"
+	PERSON_MODEL_PATH = 'resources/image_detector/frozen_inference_graph.pb'
 	FACE_ALIGNER_PATH = 'resources/face_detection/shape_predictor_68_face_landmarks.dat' 
 	FACE_EMBEDDINGS_PATH =  'resources/face_detection/frozen_facenet.pb'
 	GENDER_CLASSIFIER_PATH = 'resources/face_detection/gender.pkl'
@@ -31,6 +31,7 @@ class ProductionConfig(Config):
 	DEBUG = False
 	LOG_LEVEL = logging.DEBUG
 	CAMERA_SERVICE_URL = "https://heatstoreapis0018881710trial.hanatrial.ondemand.com/heatstore-api/cameras"
-	FACE_ALIGNER_PATH = 's3://heatstore/resources/face_detection/shape_predictor_68_face_landmarks.dat' 
-	FACE_EMBEDDINGS_PATH =  's3://heatstore/resources/face_detection/frozen_facenet.pb'
-	GENDER_CLASSIFIER_PATH = 's3://heatstore/resources/face_detection/gender.pkl'
+	PERSON_MODEL_PATH = '/usr/local/share/heatstore/resources/image_detector/frozen_inference_graph.pb'
+	FACE_ALIGNER_PATH = '/usr/local/share/heatstore/resources/face_detection/shape_predictor_68_face_landmarks.dat' 
+	FACE_EMBEDDINGS_PATH =  '/usr/local/share/heatstore/resourcesface_detection/frozen_facenet.pb'
+	GENDER_CLASSIFIER_PATH = '/usr/local/share/heatstore/resources/face_detection/gender.pkl'

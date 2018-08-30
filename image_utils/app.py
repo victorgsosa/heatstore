@@ -28,9 +28,10 @@ config = {
 
 app = Flask(__name__)
 api = Api(app)
-config_name = os.getenv('IMAGE_UTILS_ENV', 'dev')
+config_name = os.environ.get('IMAGE_UTILS_ENV', 'dev')
 app.config.from_object(config[config_name])
 logging.basicConfig(level=app.config['LOG_LEVEL'], stream=sys.stdout)
+app.logger.info("Configuring from %s" % config[config_name])
 health = HealthCheck(app, "/health")
 person_detector = PersonDetector(PersonDetectorModel(path=app.config['PERSON_MODEL_PATH']))
 cropper = ImageCropper()
