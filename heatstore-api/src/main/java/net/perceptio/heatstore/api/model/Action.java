@@ -1,5 +1,7 @@
 package net.perceptio.heatstore.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -14,6 +16,7 @@ public class Action {
     private String id;
     private String description;
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "actions")
+    @JsonIgnore
     private Set<Role> roles = new HashSet<>(0);
 
     public Action() {
@@ -29,6 +32,22 @@ public class Action {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     @Override

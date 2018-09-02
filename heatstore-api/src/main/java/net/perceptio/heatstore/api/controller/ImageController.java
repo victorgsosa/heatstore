@@ -1,7 +1,9 @@
 package net.perceptio.heatstore.api.controller;
 
+import net.perceptio.heatstore.api.controller.repository.CameraRepository;
 import net.perceptio.heatstore.api.controller.repository.DetectionsCountRepository;
 import net.perceptio.heatstore.api.controller.repository.ImageRepository;
+import net.perceptio.heatstore.api.model.Camera;
 import net.perceptio.heatstore.api.model.DetectionsCount;
 import net.perceptio.heatstore.api.model.Image;
 import org.slf4j.Logger;
@@ -12,30 +14,36 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/image-api")
+@RequestMapping("/images")
 @SuppressWarnings("unused")
 public class ImageController {
     static Logger log = LoggerFactory.getLogger(ImageController.class);
 
     private ImageRepository ImageRepository;
     private DetectionsCountRepository detectionsCountRepository;
+    private CameraRepository cameraRepository;
 
 
     @CrossOrigin
-    @PostMapping("/image")
+    @PostMapping
     public Image saveImage(@RequestBody Image image) {
-        image.setDetections(image.getDetections().stream().map(detection -> {
-            detection.setImage(image);
-            return detection;
-        }).collect(Collectors.toList()));
+        image = checkImage(image);
         return getImageRepository().save(image);
     }
 
+    private Image checkImage(Image image) {
+        Camera camera = getCameraRepository().findById(image.getCamera().getId())
+                .orElseThrow(() ->
+                        new IllegalArgumentException(String.format("Camera %s does not exists", image.getCamera().getId())
+                        ));
+        image.setCamera(camera);
+        return image;
+    }
+
     @CrossOrigin
-    @GetMapping("/images")
+    @GetMapping
     public @ResponseBody
     List<Image> findImages(@RequestParam("init") Date init, @RequestParam(value = "end", required = false) Date end) {
         List<Image> images = getImageRepository().findByDateBetween(new Timestamp(init.getTime()), new Timestamp(end.getTime()));
@@ -44,7 +52,7 @@ public class ImageController {
     }
 
     @CrossOrigin
-    @GetMapping("detectionsCount")
+    @GetMapping("/detectionsCount")
     public @ResponseBody
     List<DetectionsCount> findDetectionsCount(@RequestParam("init") Date init, @RequestParam(value = "end", required = false) Date end) {
         List<DetectionsCount> detectionsCounts = getDetectionsCountRepository().findByIdDateBetween(init, end);
@@ -53,7 +61,7 @@ public class ImageController {
     }
 
     @CrossOrigin
-    @GetMapping("detectionsCount/groupByHour")
+    @GetMapping("/detectionsCount/groupByHour")
     public @ResponseBody
     List<DetectionsCount> findDetectionsCountGroupByHour(@RequestParam("init") Date init, @RequestParam(value = "end", required = false) Date end) {
         List<DetectionsCount> detectionsCounts = getDetectionsCountRepository().findByIdDateBetweenGroupByHour(init, end);
@@ -79,5 +87,14 @@ public class ImageController {
     @Autowired
     public void setDetectionsCountRepository(DetectionsCountRepository detectionsCountRepository) {
         this.detectionsCountRepository = detectionsCountRepository;
+    }
+
+    public CameraRepository getCameraRepository() {
+        return cameraRepository;
+    }
+
+    @Autowired
+    public void setCameraRepository(CameraRepository cameraRepository) {
+        this.cameraRepository = cameraRepository;
     }
 }
