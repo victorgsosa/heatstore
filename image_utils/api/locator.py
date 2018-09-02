@@ -35,7 +35,7 @@ class ImageLocatorController(BaseCameraController, Resource):
 		images = request.get_json(force=True)
 		cameras = super(ImageLocatorController, self).find_cameras(images)
 		images = self.add_locations(images, cameras)
-		self.send_to_rabbit(images)
+		self.send_to_rabbit(images, cameras)
 		return images
 
 

@@ -27,11 +27,11 @@ class DevelopmentConfig(Config):
 
 class ProductionConfig(Config):
 	PORT = 8080
-	RABBITMQ_HOST = 'amqp://guest:guest@172.31.32.133:5672'
+	RABBITMQ_HOST = 'amqp://guest:guest@rabbitmq-service.heatstore:5672'
 	DEBUG = False
 	LOG_LEVEL = logging.DEBUG
 	CAMERA_SERVICE_URL = "https://heatstoreapis0018881710trial.hanatrial.ondemand.com/heatstore-api/cameras"
 	PERSON_MODEL_PATH = '/usr/local/share/heatstore/resources/image_detector/frozen_inference_graph.pb'
 	FACE_ALIGNER_PATH = '/usr/local/share/heatstore/resources/face_detection/shape_predictor_68_face_landmarks.dat' 
-	FACE_EMBEDDINGS_PATH =  '/usr/local/share/heatstore/resourcesface_detection/frozen_facenet.pb'
+	FACE_EMBEDDINGS_PATH =  '/usr/local/share/heatstore/resources/face_detection/frozen_facenet.pb'
 	GENDER_CLASSIFIER_PATH = '/usr/local/share/heatstore/resources/face_detection/gender.pkl'

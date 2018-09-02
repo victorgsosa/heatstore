@@ -23,7 +23,6 @@ class SVMFaceClassifier(AbstractFaceClassifier):
 		return self._model
 
 	def predict(self, X):
-		print(X)
 		return self._model.predict(self._preprocess_X(X))
 
 	def predict_proba(self, X):

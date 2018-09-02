@@ -32,7 +32,7 @@ class ClassifierController(BaseCameraController, Resource):
 		images = request.get_json(force=True)
 		cameras = super(ClassifierController, self).find_cameras(images)
 		images = self.add_classes(images)
-		self.send_to_rabbit(images)
+		self.send_to_rabbit(images, cameras)
 		return images
 
 	def add_classes(self, images):
