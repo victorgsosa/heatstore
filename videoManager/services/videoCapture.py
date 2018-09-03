@@ -8,9 +8,16 @@ import base64
 import math
 import threading
 import time
+import numpy as np
 
 class VideoCapture:
 	pass
+
+	DIM=(1280, 720)
+	K=np.array([[891.7489340683804, 0.0, 676.2188454314042], [0.0, 897.2239855804237, 405.7293137278092], [0.0, 0.0, 1.0]])
+	D=np.array([[-0.20806507742892744], [0.12946991645680045], [-0.18885159067031906], [0.09064495701857257]])
+
+
 
 	def __init__(self, Camera):
 		pass
@@ -37,6 +44,11 @@ class VideoCapture:
 		self.photo=False
 		print("Rise timer seconds: ",self._camera._capfreq)
 
+	def undistort(self, img):
+		h,w = img.shape[:2]
+		map1, map2 = cv2.fisheye.initUndistortRectifyMap(self.K, self.D, np.eye(3), self.K, self.DIM, cv2.CV_16SC2)
+		undistorted_img = cv2.remap(img, map1, map2, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
+		return undistorted_img
 
 	def play(self):
 		pass
@@ -53,6 +65,7 @@ class VideoCapture:
 			ret, frame = cap.read()
 			#gray=cv2.resize(frame,(800,600))
 		    # Display the resulting frame
+			frame = self.undistort(frame)
 			cv2.imshow('frame',frame)
 
 			if (self.photo):
