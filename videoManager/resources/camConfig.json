@@ -1,10 +1,10 @@
 [
 	{
-		"id": "ddf4aae7-68b2-4230-815c-90df98715640",
-		"name": "CamMarriMac",
-		"url": 0,
+		"id": "df50fda1-f470-434f-8906-e45fb58154fa",
+		"name": "Camera3",
+		"url": "rtsp://admin:RFPZWE@192.168.1.41:554/11",
 		"msgType": "d17760af935ff8fc3391",
-		"token": "ae54417226ab8684a18f4acab7bbbc13",
-		"cap_freq":10
+		"token": "deff9739908cb5404fe0f26f50a0e1ae",
+		"cap_freq":3600
 	}
 ]

@@ -34,7 +34,7 @@ class VideoCapture:
 
 	def shooting(self):
 		pass
-		self.photo=True
+		self.photo=False
 		print("Rise timer seconds: ",self._camera._capfreq)
 
 
@@ -47,6 +47,7 @@ class VideoCapture:
 		timer=threading.Timer(self._camera._capfreq,self.shooting)
 		timer.start()
 		print("TIMER",timer)
+		img_counter = 0
 		while(True):
 		    # Capture frame-by-frame
 			ret, frame = cap.read()
@@ -74,14 +75,11 @@ class VideoCapture:
 				timer.cancel()
 				break
 			elif k%256 == 32:
-		        # SPACE pressed
-				ret, img_buf=cv2.imencode('.png',frame)
-				imagebin=base64.b64encode(img_buf)
-				
-				try:
-					_thread.start_new_thread(self.sendMsg,(imagebin,))
-				except:
-					print ("Error: unable to start thread")
+		        # SPACE pressed take and save picture
+				img_name = "calibrator/opencv_frame_{}.png".format(img_counter)
+				cv2.imwrite(img_name, frame)
+				print("{} written!".format(img_name))
+				img_counter += 1
 
 
 		# When everything done, release the capture
