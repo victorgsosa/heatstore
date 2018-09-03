@@ -2,10 +2,12 @@
 applications:
 - name: iotMessageReceiver
   command: node app.js
-  memory: 128M
+  memory: 256M
   instances: 1
   host: iotMessageReceiver
   path: .
+  health-check-type: http
+  health-check-http-endpoint: /health
 services:
    - rabbitmq-service
   
