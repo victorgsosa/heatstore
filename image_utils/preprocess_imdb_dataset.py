@@ -19,8 +19,6 @@ embeddings = Facenet(FacenetModel('resources/face_detection/frozen_facenet.pb'))
 def _align_image(image, crop_size):
 	bb = aligner.getLargestFaceBoundingBox(image)
 	aligned = aligner.align(crop_size, image, bb, landmarkIndices=AlignDlib.INNER_EYES_AND_BOTTOM_LIP)
-	if aligned is not None:
-		aligned = cv2.cvtColor(aligned, cv2.COLOR_BGR2RGB)
 	return aligned
 
 def _image_embeddings(image):
