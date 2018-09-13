@@ -29,14 +29,105 @@ module.exports={
 		   res.write(fs.readFileSync(path));
 	   }else{
 		   res.write(JSON.stringify({"id":"0","content":"no data"}));
-	   }   
-  	 
-  	  //if(storedDetection===undefined){res.write(JSON.stringify({"id":"0","content":"no data"}));}
-  	  //else{res.write(JSON.stringify(storedDetection));}
-  	  //res.write(JSON.stringify(utils.detection));
-  	  
-  	  
+	   }     	  
   	return 200;
+	},
+	
+	get_detectioncam1: function(req,res){
+	 console.log("GET_DETECTION CAM 1");
+	 var path="shared/detectioncam1.json";
+	   if(fs.existsSync(path)){
+		   res.write(fs.readFileSync(path));
+	   }else{
+		   res.write(JSON.stringify({"id":"0","content":"no data"}));
+	   }     	  
+	 return 200;
+	},
+	
+	get_detectioncam2: function(req,res){
+	 console.log("GET_DETECTION CAM 2");
+	 //var path="shared/detectioncam2.json";
+	 var dir = "shared/cam2";
+	 var dirFiles = fs.readdirSync(dir);
+	 var rnd=Math.floor(Math.random() * dirFiles.length);
+	 var path=dir+"/"+dirFiles[rnd];
+	  if(fs.existsSync(path)){
+		   res.write(fs.readFileSync(path));
+	   }else{
+		   res.write(JSON.stringify({"id":"0","content":"no data"}));
+	   }     	  
+	 return 200;
+	},
+	
+	get_detectioncam3: function(req,res){
+	 console.log("GET_DETECTION CAM 3");
+	 //var path="shared/detectioncam3.json";
+	 var dir = "shared/cam3";
+	 var dirFiles = fs.readdirSync(dir);
+	 var rnd=Math.floor(Math.random() * dirFiles.length);
+	 var path=dir+"/"+dirFiles[rnd];
+	   if(fs.existsSync(path)){
+		   res.write(fs.readFileSync(path));
+	   }else{
+		   res.write(JSON.stringify({"id":"0","content":"no data"}));
+	   }     	  
+	 return 200;
+	},
+	
+	get_detectionhermeco: function(req,res){
+		 console.log("GET_DETECTION CAM HERMECO");
+		 var dir = "shared/hermeco";
+		 var dirFiles = fs.readdirSync(dir);
+		 var rnd=Math.floor(Math.random() * dirFiles.length);
+		 var path=dir+"/"+dirFiles[rnd];
+		   if(fs.existsSync(path)){
+			   res.write(fs.readFileSync(path));
+		   }else{
+			   res.write(JSON.stringify({"id":"0","content":"no data"}));
+		   }     	  
+		 return 200;
+	},
+	
+	get_delcam2: function(req,res){
+		var dir = "shared/cam2";
+		var dirFiles = fs.readdirSync(dir);
+		console.log(dirFiles.length);
+		for (let file in dirFiles) {
+			var filename = dir+"/"+dirFiles[file];
+			fs.unlink(filename, (err) => {
+				  if (err) {console.log(err);};
+				  console.log(dirFiles[file]+' was deleted');
+				});
+		}
+		return 200;
+	},
+	
+	get_delcam3: function(req,res){
+		var dir = "shared/cam3";
+		var dirFiles = fs.readdirSync(dir);
+		console.log(dirFiles.length);
+		for (let file in dirFiles) {
+			var filename = dir+"/"+dirFiles[file];
+			fs.unlink(filename, (err) => {
+				  if (err) {console.log(err);};
+				  console.log(dirFiles[file]+' was deleted');
+				});
+		}
+		return 200;
+	},
+	
+	get_delhermeco: function(req,res){
+		var dir = "shared/hermeco";
+		var dirFiles = fs.readdirSync(dir);
+		console.log(dirFiles.length);
+		for (let file in dirFiles) {
+			var filename = dir+"/"+dirFiles[file];
+			fs.unlink(filename, (err) => {
+				  if (err) {console.log(err);};
+				  console.log(dirFiles[file]+' was deleted');
+				});
+		}
+		return 200;
 	},
 	
 	get_health: function(req,res){

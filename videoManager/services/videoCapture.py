@@ -13,9 +13,9 @@ import numpy as np
 class VideoCapture:
 	pass
 
-	DIM=(1280, 720)
-	K=np.array([[891.7489340683804, 0.0, 676.2188454314042], [0.0, 897.2239855804237, 405.7293137278092], [0.0, 0.0, 1.0]])
-	D=np.array([[-0.20806507742892744], [0.12946991645680045], [-0.18885159067031906], [0.09064495701857257]])
+	#DIM=(1280, 720)
+	#K=np.array([[891.7489340683804, 0.0, 676.2188454314042], [0.0, 897.2239855804237, 405.7293137278092], [0.0, 0.0, 1.0]])
+	#D=np.array([[-0.20806507742892744], [0.12946991645680045], [-0.18885159067031906], [0.09064495701857257]])
 
 
 
@@ -26,6 +26,13 @@ class VideoCapture:
 		self._camera=Camera
 		self._inittime=int(datetime.now().timestamp())
 		self.photo=False
+		self.K=np.array(Camera._k)
+		self.D=np.array(Camera._d)
+		if len(self.K)>0:
+			pass
+			self.DIM=(Camera._dim[0],Camera._dim[1])
+		else:
+			self.DIM=()
 		self.play()
 
 	def sendMsg(self,imagebin):
@@ -41,7 +48,7 @@ class VideoCapture:
 
 	def shooting(self):
 		pass
-		self.photo=False
+		self.photo=True
 		print("Rise timer seconds: ",self._camera._capfreq)
 
 	def undistort(self, img):
@@ -65,34 +72,39 @@ class VideoCapture:
 			ret, frame = cap.read()
 			#gray=cv2.resize(frame,(800,600))
 		    # Display the resulting frame
-			frame = self.undistort(frame)
-			cv2.imshow('frame',frame)
-
-			if (self.photo):
+			if ret:
 				pass
-				self.photo = False
-				timer=threading.Timer(self._camera._capfreq,self.shooting)
-				timer.start()
-				ret, img_buf=cv2.imencode('.png',frame)
-				imagebin=base64.b64encode(img_buf)
-				try:
-					_thread.start_new_thread(self.sendMsg,(imagebin,))
-				except:
-					print ("Error: unable to start thread")
-					timer.cancel()
+				if len(self.K)>0:
+					pass
+					frame = self.undistort(frame)
+				cv2.imshow('frame',frame)
 
-			k = cv2.waitKey(1)
-			if k%256 == 27:
-		        # ESC pressed
-				print("Escape hit, closing..."+str(self._camera._url))
-				timer.cancel()
-				break
-			elif k%256 == 32:
-		        # SPACE pressed take and save picture
-				img_name = "calibrator/opencv_frame_{}.png".format(img_counter)
-				cv2.imwrite(img_name, frame)
-				print("{} written!".format(img_name))
-				img_counter += 1
+				if (self.photo):
+					pass
+					self.photo = False
+					timer=threading.Timer(self._camera._capfreq,self.shooting)
+					timer.start()
+					ret, img_buf=cv2.imencode('.png',frame)
+					imagebin=base64.b64encode(img_buf)
+					try:
+						_thread.start_new_thread(self.sendMsg,(imagebin,))
+					except:
+						print ("Error: unable to start thread")
+						timer.cancel()
+
+				k = cv2.waitKey(1)
+				if k%256 == 27:
+			        # ESC pressed
+					print("Escape hit, closing..."+str(self._camera._url))
+					timer.cancel()
+					break
+				elif k%256 == 32:
+			        # SPACE pressed take and save picture
+					self.photo=True
+					#img_name = "calibrator/summit_frame_{}.png".format(img_counter)
+					#cv2.imwrite(img_name, frame)
+					#print("{} written!".format(img_name))
+					#img_counter += 1
 
 
 		# When everything done, release the capture

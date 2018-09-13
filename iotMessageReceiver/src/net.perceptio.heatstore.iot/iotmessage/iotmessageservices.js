@@ -9,27 +9,39 @@ module.exports={
 	map_locator: function(jsondata){
 		var detection;
 		var storeDetection;
+		var camera;
+		var storedfile;
 		
 		for (let elem in jsondata) {
   	  		detection = {
   	  	"camera":jsondata[elem].camera,			
     		"date":jsondata[elem].date,
     		"detections":jsondata[elem].detections };
-
+  	  	
+  	  	camera = jsondata[elem].camera;
   	  		
   	  	storeDetection = {
 	  				"id":jsondata[elem].id,
 	  	      		"date":jsondata[elem].date,
-	  	      		"detections":jsondata[elem].detections, 
+	  	      		"detections":jsondata[elem].detections,
+	  	      		"classes":jsondata[elem].classes,
 	  	      		"content":jsondata[elem].content};	
   	  		  		
 		}
 		
-		fs.writeFile("shared/detection.json", JSON.stringify(storeDetection), function(err) {
+		switch(camera){
+		case "72ccfc2f-3a0d-4cb6-b026-68c51b61e751":
+			storedfile = "shared/detectioncam1.json";
+			break;
+		default:
+			storedfile = "shared/detection.json";
+		}
+		
+		
+		fs.writeFile(storedfile, JSON.stringify(storeDetection), function(err) {
 	  	      if(err) {
 	  	          return console.log(err);
 	  	      }
-	
 	  	      console.log("The file was saved!");
 	  	  });
 		
@@ -52,6 +64,11 @@ module.exports={
 	put_counter_in: function(post_response,jsondata){
 		var counter_in;
 		var image_id;
+		
+		var storeDetection;
+		var camera;
+		var storedfile;
+		
 		for (let elem in post_response) {
   	  			image_id = post_response[elem].id;
   	  		}
@@ -63,6 +80,7 @@ module.exports={
   	  			"embeddings": jsondata[elem].embeddings
   	  			};
   	  		}
+		
 		return counter_in;
 		
 	},
@@ -76,6 +94,11 @@ module.exports={
 		var embeddings=[];
 		var classes=[];
 		var iotservice = this;
+		
+		var storeDetection;
+		var camera;
+		var storedfile;
+		
 		console.log("EN PUT_CLASSIFICATOR");
 		
 		for (let elem in jsondata) {
@@ -98,7 +121,51 @@ module.exports={
 			  				}]
 			  			};
 				iotservice["put"](classificator);
-			}	
+			}
+			
+
+	  	  	camera = jsondata[elem].camera;
+	  		
+	  	  	storeDetection = {
+		  				"id":jsondata[elem].id,
+		  	      		"date":jsondata[elem].date,
+		  	      		"detections":jsondata[elem].detections,
+		  	      		"classes":jsondata[elem].classes,
+		  	      		"content":jsondata[elem].content
+		  	      		};
+
+	  		
+	  		}
+			
+		if(storeDetection.classes.length>0){
+			var d = new Date();
+			var seconds = Math.round(d.getTime()/1000);
+			switch(camera){
+			case "1556b79b-78e0-4ba5-aac8-76916292ebca":
+				storedfile = "shared/detection.json";
+				//storedfile = "shared/detcam4_"+seconds+".json";
+				break;
+			case "df50fda1-f470-434f-8906-e45fb58154fa":
+				//storedfile = "shared/detectioncam3.json";
+				storedfile = "shared/cam3/detcam3_"+seconds+".json";
+				break;
+			case "af93b16c-58ae-47c1-ac89-639f1a07afb7":
+				//storedfile = "shared/detectioncam3.json";
+				storedfile = "shared/cam2/detcam2_"+seconds+".json";
+				break;
+			case "fe5054be-fa09-428e-8578-7f32d9ffd34b":
+				//storedfile = "shared/detectioncam3.json";
+				storedfile = "shared/hermeco/cam1_"+seconds+".json";
+				break;
+			}
+			
+			
+			fs.writeFile(storedfile, JSON.stringify(storeDetection), function(err) {
+		  	      if(err) {
+		  	          return console.log(err);
+		  	      }
+		  	      console.log("The file was saved! "+storedfile);
+		  	  });
 		}
 	},
 	
