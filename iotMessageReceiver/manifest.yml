@@ -8,6 +8,5 @@ applications:
   path: .
   health-check-type: http
   health-check-http-endpoint: /health
-services:
-   - rabbitmq-service
+
   

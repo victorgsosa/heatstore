@@ -28,7 +28,7 @@ module.exports = {
 		    //return "amqp://guest:guest@rabbitmq-service.heatstore:5672"
 			  return "amqp://guest:guest@18.222.13.152:5672";
 		  }*/
-		  return "amqp://guest:guest@18.217.65.195:5672";
+		  return "amqp://guest:guest@18.221.22.10:5672";
 		},
 
 	
