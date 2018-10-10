@@ -126,18 +126,25 @@ module.exports={
 
 	  	  	camera = jsondata[elem].camera;
 	  		
-	  	  	storeDetection = {
+	  	  	console.log("CLASSES RETORNADAS", jsondata[elem].classes );
+	  	  	//if(jsondata[elem].classes.length > 0 && jsondata[elem].classes[0].gender != undefined){
+		  	  	storeDetection = {
 		  				"id":jsondata[elem].id,
 		  	      		"date":jsondata[elem].date,
 		  	      		"detections":jsondata[elem].detections,
 		  	      		"classes":jsondata[elem].classes,
 		  	      		"content":jsondata[elem].content
 		  	      		};
+	  	  	//}
+	  	  	
+
 
 	  		
 	  		}
 			
-		if(storeDetection.classes.length>0){
+		//if(storeDetection.id != undefined){
+		if( storeDetection.classes.length>0 && storeDetection.classes[0].gender!=undefined ){
+			console.log("ENTREGADO POR CLASSES: ",storeDetection.classes);
 			var d = new Date();
 			var seconds = Math.round(d.getTime()/1000);
 			switch(camera){

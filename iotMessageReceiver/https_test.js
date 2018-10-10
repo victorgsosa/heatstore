@@ -40,17 +40,19 @@ fs.writeFile("shared/detection.json", JSON.stringify(storeDetection), function(e
 });*/
 
 
-
+var n = 5;
 
 storeDetection = {
 			"id":"1234",
     		"date":"5678",
     		"detections":"detect",
-    		"classes":["uno","dos"],
+    		"classes":[ { gender: 1 }, {} ],
     		"content":"content"};
 
-
-console.log(storeDetection.classes.length);
+if(storeDetection.classes[0].gender!=undefined && n == 5 ){
+	console.log("false")
+}
+console.log(storeDetection.classes[0].gender);
 
 
 
