@@ -156,7 +156,7 @@ module.exports={
 				//storedfile = "shared/detectioncam3.json";
 				storedfile = "shared/cam3/detcam3_"+seconds+".json";
 				break;
-			case "af93b16c-58ae-47c1-ac89-639f1a07afb7":
+			case "72ccfc2f-3a0d-4cb6-b026-68c51b61e751":
 				//storedfile = "shared/detectioncam3.json";
 				storedfile = "shared/cam2/detcam2_"+seconds+".json";
 				break;
