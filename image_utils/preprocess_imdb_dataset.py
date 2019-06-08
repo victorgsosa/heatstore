@@ -21,8 +21,7 @@ def _align_image(image, crop_size):
 	aligned = aligner.align(crop_size, image, bb, landmarkIndices=AlignDlib.INNER_EYES_AND_BOTTOM_LIP)
 	return aligned
 
-def _image_embeddings(image):
-	
+def _image_embeddings(image):	
 	face_embeddings = embeddings.detect([output_io.getvalue()])
 	return face_embeddings[0]
 

@@ -35,3 +35,7 @@ def byte_string_to_cv(byte_image):
 def base64_to_cv(base64_image):
 	byte_image = read_base64(base64_image) 
 	return byte_string_to_cv(byte_image)
+
+def byte_string_to_cv_rgb(byte_image):
+	cv_image =  byte_string_to_cv(byte_image)
+	return cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)

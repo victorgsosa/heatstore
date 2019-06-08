@@ -1,5 +1,4 @@
 import json
-import pika
 import numpy as np
 import uuid
 import logging
@@ -9,6 +8,7 @@ from flask import request
 from flask_restful import Resource
 from services.image_locator import ImageLocator
 from services.camera import CameraService
+from services.amqp import BlockingPublisher
 from model.camera import Camera
 from util.encoder import Encoder
 
@@ -20,9 +20,8 @@ log = logging.getLogger(__name__)
 class ImageLocatorController(BaseCameraController, Resource):
 	LOCATION_ROLE = 'LOCATOR'
 	
-	def __init__(self, camera_service: CameraService, connection: pika.BlockingConnection = None):
-		BaseCameraController.__init__(self, camera_service)
-		self.connection = connection
+	def __init__(self, camera_service: CameraService, publisher: BlockingPublisher):
+		BaseCameraController.__init__(self, camera_service, publisher)
 
 
 	def consume(self, channel, method, properties, body):
@@ -41,7 +40,7 @@ class ImageLocatorController(BaseCameraController, Resource):
 
 	def add_locations(self, images, cameras):
 		locations = [ self.locate(cameras[image['camera']],image['detections'], im.image_size(im.read_base64(image['content']))[0]) if image['detections'] else [] for image in images]
-		log.debug("added locations %s", locations)
+		log.info("added locations %s", locations)
 		for i in range(len(images)):
 			for j in range(len(images[i]['detections'])):
 				images[i]['detections'][j]['x'] = locations[i][j]['x']
@@ -67,7 +66,5 @@ class ImageLocatorController(BaseCameraController, Resource):
 		return image_decoded.shape[1], image_decoded.shape[0]
 
 	def send_to_rabbit(self, images, cameras):
-		if self.connection:
-			channel = self.connection.channel()
-			super(ImageLocatorController, self).send_to_rabbit_for_role(channel, images, cameras, self.LOCATION_ROLE)
+		super(ImageLocatorController, self).send_to_rabbit_for_role(images, cameras, self.LOCATION_ROLE)
 

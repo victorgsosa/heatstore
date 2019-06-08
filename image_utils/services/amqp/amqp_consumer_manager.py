@@ -2,6 +2,9 @@ import pika
 import threading
 import logging
 
+from .consumer import Consumer
+from .subscriber import Subscriber
+
 log = logging.getLogger(__name__)
 
 class AMQPConsumerManager(object):
@@ -10,27 +13,38 @@ class AMQPConsumerManager(object):
 		self.consumers = []
 		self.subscribers = []
 
-	def add_consumer(self, queue, callback, no_ack=True):
-		connection = pika.BlockingConnection(pika.URLParameters(self.amqp_url))
-		log.info('Listening %s queue on %s with callback %s', queue, connection, callback)
+	def add_consumer(self, queue, callback, durable=False):
+		log.info('Adding %s queue with callback %s', queue, callback)
+		self.consumers.append(Consumer(self.amqp_url, queue, callback, durable))
+
+	def subscribe(self, exchange, callback):
+		log.info('Adding to exchange %s with callback %s', exchange, callback)
+		self.subscribers.append(Subscriber(self.amqp_url, exchange, callback))
+
+	def start(self):
+		for consumer in self.consumers:
+			t = threading.Thread(target=consumer.run)
+			t.daemon = True
+			t.start()
+		for subscriber in self.subscribers:
+			t = threading.Thread(target=subscriber.run)
+			t.daemon = True
+			t.start()
+		
+
+
+	def start_consumer(self, amqp_url, queue, callback, no_ack):
+		connection = pika.BlockingConnection(pika.URLParameters(amqp_url))
 		channel = connection.channel()
 		channel.queue_declare(queue=queue, durable=True)
 		channel.basic_consume(callback,
                       queue=queue,
                       no_ack=no_ack)
-		t = threading.Thread(target=channel.start_consuming)
-		t.daemon = True
-		t.start()
-		self.consumers.append({
-			'queue' : queue,
-			'channel': channel,
-			'thread': t
-			})
+		channel.start_consuming()
 
-	def subscribe(self, exchange, callback, no_ack=True):
-		connection = pika.BlockingConnection(pika.URLParameters(self.amqp_url))
-		log.info('Subscribing to exchange on %s with callback %s', exchange, connection, callback)
-		channel = connection.channel()
+	def start_subscriber(self, amqp_url, exchange, callback, no_ack):
+		connection = pika.BlockingConnection(pika.URLParameters(amqp_url))
+		channel = self.connection.channel()
 		channel.exchange_declare(exchange=exchange,
                          exchange_type='fanout')
 		result = channel.queue_declare(exclusive=True)
@@ -39,14 +53,8 @@ class AMQPConsumerManager(object):
 		channel.basic_consume(callback,
                       queue=result.method.queue,
                       no_ack=no_ack)
-		t = threading.Thread(target=channel.start_consuming)
-		t.daemon = True
-		t.start()
-		self.consumers.append({
-			'exchange' : exchange,
-			'channel': channel,
-			'thread': t
-			})
+		channel.start_consuming()
+
 
 
 

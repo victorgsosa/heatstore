@@ -1,1 +1,4 @@
 from .svm_face_classifier import SVMFaceClassifier
+from .nn_face_classifier import NNFaceClassifier
+from .resnet_face_classifier import ResNetFaceClassifier
+from .abstract_face_classifier import AbstractFaceClassifier
