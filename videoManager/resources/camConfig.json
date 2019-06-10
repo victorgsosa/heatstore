@@ -1,12 +1,12 @@
 [
 	{
-		"id": "ddf4aae7-68b2-4230-815c-90df98715640",
-		"name": "CamMarriMac",
-		"url": "rtsp://admin:FARO2015@10.50.68.50/Streaming/channels/101/",
+		"id": "1556b79b-78e0-4ba5-aac8-76916292ebca",
+		"name": "Camera4",
+		"url": 0,
 		"msgType": "d17760af935ff8fc3391",
-		"token": "ae54417226ab8684a18f4acab7bbbc13",
-		"cap_freq":10,
-		"dim":[],
+		"token": "18ede9d3814c343485b4db944249f3b",
+		"cap_freq":5,
+		"dim":[1280,720],
 		"k": [],
 		"d":[]
 	}

@@ -37,18 +37,18 @@ class VideoCapture:
 
 	def sendMsg(self,imagebin):
 		pass
-		message = [{
+		messages = [{
 					"timestamp": int(datetime.now().timestamp()),
 					"imagetype": 'image/png',
 					"imagecod": 'base64',
 					"image": str(imagebin)[2:-1]
 				}]
 		print("Enviando imagen camara",self._camera._name)
-		sendIot(self._camera._id,self._camera._token,self._camera._msgtp,message)
+		sendIot(self._camera._id,self._camera._token,self._camera._msgtp,messages)
 
 	def shooting(self):
 		pass
-		self.photo=False
+		self.photo=True
 		print("Rise timer seconds: ",self._camera._capfreq)
 
 	def undistort(self, img):
