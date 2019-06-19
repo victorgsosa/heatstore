@@ -31,9 +31,10 @@ class ResNetModel(object):
 
 class ResNetFaceClassifier(AbstractFaceClassifier):
 
-	def __init__(self, name):
+	def __init__(self, name, binary = False):
 		super().__init__()
 		self._name = name
+		self._binary = binary
 		self._session = tf.Session()
 
 	def _train(self, X, y):
@@ -41,11 +42,13 @@ class ResNetFaceClassifier(AbstractFaceClassifier):
 
 	def predict(self, X):
 		with self._session.as_default():
-			return self._model.predict(X)
+			return self._model.predict(X) if not self._binary else self._model.predict(X)[0]
 
 	def predict_proba(self, X):
 		with self._session.as_default():
-			return self._model.predict_proba(X)
+			proba = self._model.predict_proba(X)
+			clazz = self.predict(X) 		
+			return proba if not self._binary else proba * (clazz == 1) + (1-proba) * (clazz == 0)
 
 	def save(self, filename):
 		_self._model.save(filename)
@@ -66,7 +69,6 @@ class ResNetFaceClassifier(AbstractFaceClassifier):
 	def process_image(image):
 		resized_image = cv2.resize(image, (image_size, image_size))
 		resized_image = resized_image / 1./255
-		resized_image = np.expand_dims(resized_image, 0)
 		return resized_image
 
 

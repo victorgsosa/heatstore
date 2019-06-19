@@ -13,8 +13,6 @@ from api import BaseCameraController
 log = logging.getLogger(__name__)
 
 class CropperController(Resource, BaseCameraController):
-	CLASSIFIER_QUEUE = 'classifier'
-	CLASSIFIER_ACTION = 'CLASSIFY'
 	EMBEDDINGS_QUEUE = 'embeddings'
 	EMBEDDINGS_ACTION = 'EMBEDDINGS'
 
@@ -49,5 +47,4 @@ class CropperController(Resource, BaseCameraController):
 		return self.cropper.crop(im.read_base64(image), detections)
 
 	def send_to_rabbit(self, images, cameras):
-		super(EmbeddingsController, self).send_to_rabbit_for_action(images, cameras, self.CLASSIFIER_QUEUE, self.CLASSIFIER_ACTION)
 		super(CropperController, self).send_to_rabbit_for_action(images, cameras, self.EMBEDDINGS_QUEUE, self.EMBEDDINGS_ACTION)		

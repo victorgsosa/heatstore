@@ -18,6 +18,8 @@ class Config(object):
 	FACE_EMBEDDINGS_PATH =  'resources/face_detection/frozen_facenet.pb'
 	GENDER_CLASSIFIER_PATH = 'resources/face_detection/gender.h5'
 	AGE_CLASSIFIER_PATH = 'resources/face_detection/age.h5'
+	LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+	CLASSIFICATION_THRESHOLD = 0.8
 
 
 class DevelopmentConfig(Config):
@@ -37,3 +39,4 @@ class ProductionConfig(Config):
 	FACE_EMBEDDINGS_PATH =  '/usr/local/share/heatstore/resources/face_detection/frozen_facenet.pb'
 	GENDER_CLASSIFIER_PATH = '/usr/local/share/heatstore/resources/face_detection/gender.h5'
 	AGE_CLASSIFIER_PATH = '/usr/local/share/heatstore/resources/face_detection/age.h5'
+	LOG_FILE = '/opt/python/log/image_utils.log'

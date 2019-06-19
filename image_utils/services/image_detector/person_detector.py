@@ -70,9 +70,9 @@ class PersonDetector(object):
 		  				"xMin" : boxes[1][i],
 		   				"yMin" : boxes[0][i],
 			 			"xMax" : boxes[3][i],
-			 			"yMax" : boxes[2][i]
+			 			"yMax" : boxes[2][i],
 			  		}
-			  		for i in range(len(scores)) if scores[i] > threshold
+			  		for i in range(len(scores)) if scores[i] > threshold and classes[i] == 1
 			  	])
 
 		tf.logging.info('Finished processing records')

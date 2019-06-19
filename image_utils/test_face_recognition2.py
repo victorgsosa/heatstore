@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
 	age_classifier = ResNetFaceClassifier('age')
 	age_classifier.load('resources/face_detection/age.h5')
-	gender_classifier = ResNetFaceClassifier('gender')
+	gender_classifier = ResNetFaceClassifier('gender', binary=True)
 	gender_classifier.load('resources/face_detection/gender.h5')
 	first_image = None
 	while(True):
@@ -43,9 +43,11 @@ if __name__ == '__main__':
 			resized_image = cv2.resize(aligned_image, (image_size, image_size))
 			resized_image = resized_image / 1./255
 			resized_image = np.expand_dims(resized_image, 0)
+			print("age")
 			age = age_classifier.predict(resized_image)[0]
-			gender = gender_classifier.predict(resized_image)[0]
 			age_proba = age_classifier.predict_proba(resized_image)[0]
+			print("gender")
+			gender = gender_classifier.predict(resized_image)[0]
 			gender_proba = gender_classifier.predict_proba(resized_image)[0]
 			print("Age Range %s prob %s Gender %s prob %s"  % (age, age_proba, gender, gender_proba))
 			cv2.imshow('aligned', aligned_image)

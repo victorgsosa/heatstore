@@ -19,6 +19,7 @@ def to_base64(byte_image):
 	return base64.b64encode(byte_image).decode('utf-8')
 
 def cv_to_byte_string(cv_image):
+	print(cv_image)
 	pil_image = Image.fromarray(cv_image)
 	output_io = io.BytesIO()
 	pil_image.save(output_io, format='JPEG')

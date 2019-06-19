@@ -14,6 +14,8 @@ from api import BaseCameraController
 log = logging.getLogger(__name__)
 
 class EmbeddingsController(BaseCameraController, Resource):
+	CLASSIFIER_QUEUE = 'classifier'
+	CLASSIFIER_ACTION = 'CLASSIFY'
 	COUNTER_IN_ROLE = 'COUNTER_IN'
 	COUNTER_OUT_ROLE = 'COUNTER_OUT'
 
@@ -60,6 +62,7 @@ class EmbeddingsController(BaseCameraController, Resource):
 		return aligned
 
 	def send_to_rabbit(self, images, cameras):
+		super(EmbeddingsController, self).send_to_rabbit_for_action(images, cameras, self.CLASSIFIER_QUEUE, self.CLASSIFIER_ACTION)
 		super(EmbeddingsController, self).send_to_rabbit_for_role(images, cameras, self.COUNTER_IN_ROLE)
 		super(EmbeddingsController, self).send_to_rabbit_for_role(images, cameras, self.COUNTER_OUT_ROLE)
 

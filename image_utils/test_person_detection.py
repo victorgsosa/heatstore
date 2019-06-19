@@ -36,9 +36,7 @@ if __name__ == '__main__':
 	   		bottom = int(detection['yMax'] * rows)
 	   		cv2.rectangle(image, (left, top), (right, bottom), color=(23, 230, 210), thickness=2 )
 
-		crops = cropper.crop(image_bytes, filtered_detections)
-		resized_crops = [cv2.resize(crop, (100,100)) for crop in crops]
-		cv2.imshow('crops', np.hstack(resized_crops))
+		cv2.imshow('crops', image)
 		if cv2.waitKey(1) & 0xFF == ord('q'):
 			break
 
