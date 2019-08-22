@@ -20,6 +20,8 @@ public class Classifier implements Serializable {
 
     private Double value;
 
+    private Double probability;
+
     public Classifier() {
     }
 
@@ -47,19 +49,28 @@ public class Classifier implements Serializable {
         this.value = value;
     }
 
+    public Double getProbability() {
+        return probability;
+    }
+
+    public void setProbability(Double probability) {
+        this.probability = probability;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Classifier)) return false;
         Classifier that = (Classifier) o;
         return Objects.equals(getName(), that.getName()) &&
-                Objects.equals(getValue(), that.getValue());
+                Objects.equals(getValue(), that.getValue()) &&
+                Objects.equals(getProbability(), that.getProbability());
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(getName(), getValue());
+        return Objects.hash(getName(), getValue(), getProbability());
     }
 
     @Override
@@ -67,6 +78,7 @@ public class Classifier implements Serializable {
         return "Classifier{" +
                 "name='" + name + '\'' +
                 ", value=" + value +
+                ", probability=" + probability +
                 '}';
     }
 

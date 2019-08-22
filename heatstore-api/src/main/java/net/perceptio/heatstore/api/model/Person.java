@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 public class Person implements Serializable {
@@ -109,6 +110,22 @@ public class Person implements Serializable {
     public void setClassifiers(List<Classifier> classifiers) {
         this.classifiers = classifiers;
         classifiers.stream().forEach(c -> c.setPerson(this));
+    }
+
+    public void addClassifiers(List<Classifier> classifiers){
+        List<String> names = this.classifiers.stream().map(Classifier::getName).collect(Collectors.toList());
+        List<Classifier> newClassifiers = classifiers.stream().filter(
+                classifier -> !names.contains(classifier.getName())
+        ).collect(Collectors.toList());
+        this.classifiers = this.classifiers.stream().map(classifier -> {
+            Classifier newClassifier = classifiers.stream()
+                    .filter(nc -> nc.getName().equals(classifier.getName()))
+                    .filter(nc -> nc.getProbability() > classifier.getProbability())
+            .findFirst().orElse(classifier);
+            return newClassifier;
+        }).collect(Collectors.toList());
+        newClassifiers.stream().forEach(c -> c.setPerson(this));
+        this.classifiers.addAll(newClassifiers);
     }
 
     @Override

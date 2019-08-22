@@ -35,7 +35,7 @@ public class Camera {
             mappedBy = "camera",
             cascade = CascadeType.ALL,
             orphanRemoval = true,
-            fetch = FetchType.EAGER
+            fetch = FetchType.LAZY
     )
     @JsonIgnore
     private List<Image> images = new ArrayList<>();

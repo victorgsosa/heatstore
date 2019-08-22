@@ -27,19 +27,23 @@ public class PersonController {
     @PutMapping
     private Person save(@RequestBody Person person) {
         logger.debug("Saving person {}", person);
-        Timestamp seenOn = new Timestamp(System.currentTimeMillis());
+        person = checkPerson(person);
+        Timestamp seenOn = person.getImages().stream()
+                .map(i -> i.getDate())
+                .max(Timestamp::compareTo).orElse(new Timestamp(System.currentTimeMillis()));
         if (person.getId() == null) {
             logger.debug("Trying to find near person to {}", person);
             List<Person> persons = new ArrayList(findNear(person.getEmbeddings()));
             if (!persons.isEmpty()) {
                 Person oldPerson = persons.get(0);
-                logger.debug("Near person found, updating: {}", oldPerson);
+                    logger.debug("Near person found, updating: {}", oldPerson);
                 oldPerson.setLastSeenOn(seenOn);
                 if (person.getImages().stream().anyMatch(i -> oldPerson.getImages().contains(i))) {
                     throw new IllegalArgumentException(
                             String.format("This person had been already detected this images %s", person.getImages()));
                 }
                 oldPerson.addImages(person.getImages());
+                oldPerson.addClassifiers(person.getClassifiers());
                 person = oldPerson;
             } else {
                 logger.debug("Person does not have a near person, inserting {}", person);
@@ -50,7 +54,6 @@ public class PersonController {
             person.setFirstSeenOn(seenOn);
             person.setLastSeenOn(seenOn);
         }
-        checkPerson(person);
         person = getRepository().save(person);
         logger.debug("Person saved: {}", person);
         return person;
