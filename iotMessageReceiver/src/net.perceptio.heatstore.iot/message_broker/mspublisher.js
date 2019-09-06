@@ -15,7 +15,7 @@ module.exports = {
 	},
 	
 publish: function(exchange, routingKey, content) {
-	  console.log("publish llamado",exchange, routingKey);
+//	  console.log("publish llamado",exchange, routingKey);
 	  try {
 	    pubChannel.publish(exchange, routingKey, content, { persistent: true },
 	                      function(err, ok) {

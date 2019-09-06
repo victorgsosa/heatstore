@@ -16,10 +16,10 @@ create: function() {
 	  	  
 	    var url = URL.parse(req.url);
 	    var action;
-		console.log(req.method + ": " + url.pathname);	    	
+//		console.log(req.method + ": " + url.pathname);	    	
 	    	action = req.method.toLowerCase() + url.pathname;
 	    action =	action.replace('/','_');
-	    	console.log("ACTION: " + action);
+//	    	console.log("ACTION: " + action);
 	    if (req.method == 'GET') {
 		    	try{
 		    		res.statusCode = httpRequestHandler[action](req,res);
@@ -44,7 +44,7 @@ create: function() {
 				    	}catch(err){
 				    		console.log("ERROR: " + err.name +" Message: "+err.message);
 				    		res.statusCode = 502;
-				    		res.end("Bad endpoint");
+				    		res.end("Bad endpoint iotMessageReceiver");
 				    	}
 	    	  
 	      });    

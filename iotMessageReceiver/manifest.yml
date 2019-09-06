@@ -2,7 +2,7 @@
 applications:
 - name: iotMessageReceiver
   command: node app.js
-  memory: 256M
+  memory: 4096M
   instances: 1
   host: iotMessageReceiver
   path: .

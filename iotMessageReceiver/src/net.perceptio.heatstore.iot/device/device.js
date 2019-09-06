@@ -23,7 +23,7 @@ function Device(id){
 function getProperties(device){
 	var xhr = new XMLHttpRequest();
 	var urlDevApi = "https://heatstoreapis0018881710trial.hanatrial.ondemand.com/heatstore-api/cameras/"+device.id
-	console.log("Camera properties: "+urlDevApi);
+	//console.log("Camera properties: "+urlDevApi);
 	xhr.withCredentials = true;
 
 	xhr.addEventListener("readystatechange", function () {

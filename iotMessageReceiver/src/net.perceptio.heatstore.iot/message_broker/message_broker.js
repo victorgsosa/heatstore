@@ -107,7 +107,7 @@ function startPublisher() {
 
 function closeOnErr(err) {
 	  if (!err) return false;
-	  console.error("[AMQP] error", err);
+	  console.error("[AMQP] error CloseOnErr", err);
 	  amqpConn.close();
 	  return true;
 	}

@@ -45,6 +45,7 @@ function closeOnErr(err) {
 	  if (!err) return false;
 	  console.error("[AMQP] error", err);
 	  amqpConn.close();
+	  start();
 	  return true;
 	}
 
@@ -75,7 +76,8 @@ function startWorker() {
             else
               ch.reject(msg, true);
           } catch (e) {
-            closeOnErr(e);
+           // closeOnErr(e);
+            console.error("[AMQP] error", e);
           }
         });
       }
@@ -85,7 +87,7 @@ function startWorker() {
 
 
 function work(msg, cb) {
-	  console.log("Got Location QUEUE Message for: "+process.env["QUEUE_NAME"]);
+//	  console.log("Got Location QUEUE Message for: "+process.env["QUEUE_NAME"]);
 	  var iotmessage = new Iotmessage(msg.content.toString());
 	  iotmessage.map(process.env["QUEUE_NAME"]);
 	  //iotmessage.map("LOCATOR");

@@ -42,7 +42,7 @@ module.exports={
 	  	      if(err) {
 	  	          return console.log(err);
 	  	      }
-	  	      console.log("The file was saved!");
+	//  	      console.log("The file was saved!");
 	  	  });
 		
 		
@@ -50,7 +50,7 @@ module.exports={
 	},
 	
 	map_post: function(jsondata){
-		console.log("Llamado a MAP_POST");
+	//	console.log("Llamado a MAP_POST");
 		var map;
 		for (let elem in jsondata) {
   	  		map = {
@@ -92,18 +92,23 @@ module.exports={
 		var image_id=post_response.id;
 		var secuence;
 		var embeddings=[];
+		var classifiers=[];
 		var classes=[];
 		var iotservice = this;
 		
 		var storeDetection;
 		var camera;
 		var storedfile;
+		var gender;
+		var age;
+		var sentiment;
 		
-		console.log("EN PUT_CLASSIFICATOR");
+		//console.log("EN PUT_CLASSIFICATOR - BEFORE: ", JSON.stringify(jsondata));
 		
 		for (let elem in jsondata) {
 			for (let embed in jsondata[elem].embeddings) {
 				embeddings=[];
+				classifiers=[];
 				secuence = 1;
 				for (let embedval in jsondata[elem].embeddings[embed] ) {
 					var data={
@@ -113,20 +118,46 @@ module.exports={
 					embeddings.push(data);
 					secuence++;
 				}
+				
+				if(jsondata[elem].classes[embed].gender!=undefined){
+					gender={"name": "gender",
+			  				"value":jsondata[elem].classes[embed].gender.value,
+			  				"probability":jsondata[elem].classes[embed].gender.probability
+			  				};
+					classifiers.push(gender);
+  				}
+				
+				if(jsondata[elem].classes[embed].age!=undefined){
+					age={"name": "age",
+			  				"value":jsondata[elem].classes[embed].age.value,
+			  				"probability":jsondata[elem].classes[embed].age.probability
+		  					};
+					classifiers.push(age);
+  				}
+				
+				if(jsondata[elem].classes[embed].sentiment!=undefined){
+					sentiment={"name": "sentiment",
+			  				"value":jsondata[elem].classes[embed].sentiment.value,
+			  				"probability":jsondata[elem].classes[embed].sentiment.probability
+		  					};
+					classifiers.push(sentiment);
+  				}
+				
+				
 				classificator = {
 			  			"images"	:[{"id":image_id}],
 			  			"embeddings": embeddings,
-			  			"classifiers":[ {"name": "gender",
-			  				"value":jsondata[elem].classes[embed].gender
-			  				}]
+			  			"classifiers":classifiers
 			  			};
+		//		console.log("PUT CLASSIFICATOR: ", String(classificator));
 				iotservice["put"](classificator);
+				
 			}
 			
 
 	  	  	camera = jsondata[elem].camera;
 	  		
-	  	  	console.log("CLASSES RETORNADAS", jsondata[elem].classes );
+	 // 	  	console.log("CLASSES RETORNADAS", jsondata[elem].classes );
 	  	  	//if(jsondata[elem].classes.length > 0 && jsondata[elem].classes[0].gender != undefined){
 		  	  	storeDetection = {
 		  				"id":jsondata[elem].id,
@@ -144,12 +175,13 @@ module.exports={
 			
 		//if(storeDetection.id != undefined){
 		if( storeDetection.classes.length>0 && storeDetection.classes[0].gender!=undefined ){
-			console.log("ENTREGADO POR CLASSES: ",storeDetection.classes);
+		//	console.log("ENTREGADO POR CLASSES: ",storeDetection.classes);
 			var d = new Date();
 			var seconds = Math.round(d.getTime()/1000);
 			switch(camera){
 			case "1556b79b-78e0-4ba5-aac8-76916292ebca":
-				storedfile = "shared/detection.json";
+				storedfile = "shared/hermeco/cam1_"+seconds+".json"
+				//storedfile = "shared/detection.json";
 				//storedfile = "shared/detcam4_"+seconds+".json";
 				break;
 			case "df50fda1-f470-434f-8906-e45fb58154fa":
@@ -171,21 +203,21 @@ module.exports={
 		  	      if(err) {
 		  	          return console.log(err);
 		  	      }
-		  	      console.log("The file was saved! "+storedfile);
+		//  	      console.log("The file was saved! "+storedfile);
 		  	  });
 		}
 	},
 	
 	post: function(postdata, queue,jsondata){		
-		console.log("Llamado POST a API: ",JSON.stringify(postdata))
+	//	console.log("Llamado POST a API: ",JSON.stringify(postdata))
 		var iotservice = this;
 		
 		var xhr = new XMLHttpRequest();
 		xhr.withCredentials = true;		
 		xhr.addEventListener("readystatechange", function () {
 		  if (this.readyState === 4) {
-			  console.log("Response POST recibido");
-			  	console.log(this.responseText);
+	//		  console.log("Response POST recibido");
+	//		  	console.log(this.responseText);
 			    
 			    if(queue=="COUNTER_IN"||queue=="CLASSIFICATOR"){
 				    	var action = "put_"+queue.toLowerCase();
@@ -194,12 +226,12 @@ module.exports={
 		  }
 
 		});	
-		console.log("POST abierto para URL", routes.post);
+	//	console.log("POST abierto para URL", routes.post);
 		xhr.open("POST", routes.post);
 		xhr.setRequestHeader("Content-Type", "application/json");
 		xhr.setRequestHeader("Cache-Control", "no-cache");
 		xhr.send(JSON.stringify(postdata));
-		console.log("JSON enviado");
+	//	console.log("JSON enviado");
 	},
 	
 	
@@ -210,8 +242,8 @@ module.exports={
 		xhr.withCredentials = true;		
 		xhr.addEventListener("readystatechange", function () {
 		  if (this.readyState === 4) {
-			  console.log("Response PUT recibido");
-			    console.log(this.responseText);
+			//  console.log("Response PUT recibido");
+			//    console.log(this.responseText);
 		  }
 
 		});		

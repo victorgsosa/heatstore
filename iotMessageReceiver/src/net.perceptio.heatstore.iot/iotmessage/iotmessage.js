@@ -7,7 +7,7 @@ var routes = require('../utilities/routes');
 class Iotmessage{
 	
 	constructor(jdata){
-		console.log("Creando iotmessage");
+//		console.log("Creando iotmessage");
 		this.jsondata = JSON.parse(jdata);
 		this.iotmsg="";
 		this.queue=""
@@ -15,7 +15,7 @@ class Iotmessage{
 	
 	map(queue_name){
 		this.queue=queue_name;
-		console.log("Mapeando iotmessage");
+//		console.log("Mapeando iotmessage");
 		var action;
 		if(this.queue=="COUNTER_IN"|this.queue=="CLASSIFICATOR"){
 			action = "map_post"
@@ -25,8 +25,8 @@ class Iotmessage{
 		}
 		
 		this.iotmsg=services[action](this.jsondata);
-		console.log("Llamado a action",action);
-		console.log("Queue map name: ",this.queue);
+//		console.log("Llamado a action",action);
+//		console.log("Queue map name: ",this.queue);
 	}
 	
 	post(){		
